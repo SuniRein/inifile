@@ -1,0 +1,8 @@
+build/
+.cache/
+.vscode/
+.xmake/
+compile_commands.json
+.clangd
+.clang-tidy
+.clang-format
