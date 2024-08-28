@@ -5,6 +5,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 namespace ini
 {
@@ -14,6 +15,8 @@ namespace ini
  */
 class Section: private std::map<std::string, std::string>
 {
+    friend class File;
+
   public:
     using Base = std::map<std::string, std::string>;
 
@@ -23,26 +26,18 @@ class Section: private std::map<std::string, std::string>
     using Base::rbegin;  using Base::rend;
     using Base::crbegin; using Base::crend;
 
-    // Access supports;
+    // Access supports.
     using Base::operator[];
     using Base::at;
     using Base::find;
 
-    Section() = default;
+    // For std::string_view
+    std::string& operator[](std::string_view key) { return (*this)[std::string(key)]; }
 
-    // Copying need to be implemented for the buffer.
-    Section(Section const&);
-    Section& operator=(Section const&);
-
-    /// Encode the section into buffer.
-    void encode();
-
-    /// Decode the section from buffer.
-    void decode();
+    // For const char*
+    std::string& operator[](const char* key) { return (*this)[std::string(key)]; }
 
   private:
-    /// The buffer is owned by its parent File.
-    std::string_view buffer_;
 };
 
 /**
@@ -59,33 +54,44 @@ class File: private std::map<std::string, Section>
     using Base::rbegin;  using Base::rend;
     using Base::crbegin; using Base::crend;
 
-    // Access supports;
+    // Access supports.
     using Base::operator[];
     using Base::at;
     using Base::find;
 
-    /// Read file from path but not decode.
-    /// You need to decode it before accessing!
-    void read(std::filesystem::path const& input_file);
+    /// Read file from path and decode it.
+    /// Return false iff error happen.
+    /// Run File::error() for mare information.
+    bool read(std::filesystem::path const& file);
 
-    /// Write to file without auto encode.
-    /// You need to encode it before!
-    void write(std::filesystem::path const& output_file);
+    /// Write to a file.
+    /// Return false iff error happen.
+    /// Run File::error() for mare information.
+    bool write(std::filesystem::path const& file) const;
 
-    /// Encode the current sections.
-    void encode();
+    /// Read from a string and decode it.
+    /// Return false iff error happen.
+    /// Run File::error() for mare information.
+    bool decode(std::string_view str);
 
-    /// Decode the file you read.
-    void decode();
+    /// Write to a string.
+    [[nodiscard]]
+    std::string encode() const;
 
-    /// Encode and write to std::ostream.
-    void encode(std::istream& input);
+    /// Read from std::istream and decode it.
+    /// Return false iff error happen.
+    /// Run File::error() for mare information.
+    bool decode(std::istream& input);
 
-    /// Read from std::ostream and decode.
-    void decode(std::ostream& output);
+    /// Write to std::ostream.
+    void encode(std::ostream& output) const;
+
+    /// Get the detailed error description.
+    [[nodiscard]]
+    std::string_view eroor() const { return error_; }
 
   private:
-    std::string buffer_;
+    mutable std::string error_;
 };
 
 } // namespace ini
