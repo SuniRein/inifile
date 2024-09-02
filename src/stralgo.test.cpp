@@ -78,3 +78,26 @@ TEST(IsEmptyLine, Default)
     EXPECT_FALSE(str::is_empty_line("   8"));
     EXPECT_FALSE(str::is_empty_line("--"));
 }
+
+TEST(EraseComments, LineComments)
+{
+    EXPECT_EQ(str::erase_comments("# 100008 ;"), ""sv);
+    EXPECT_EQ(str::erase_comments("; 10000 #"), ""sv);
+    EXPECT_EQ(str::erase_comments("  # 100& "), "  "sv);
+    EXPECT_EQ(str::erase_comments("\t;1000\t"), "\t"sv);
+}
+
+TEST(EraseComments, InlineComments)
+{
+    EXPECT_EQ(str::erase_comments("key: value # 1000"), "key: value "sv);
+    EXPECT_EQ(str::erase_comments("key: value ; 1000"), "key: value "sv);
+    EXPECT_EQ(str::erase_comments("\tkey: value# 1000"), "\tkey: value"sv);
+    EXPECT_EQ(str::erase_comments("  key: value; 1000"), "  key: value"sv);
+}
+
+TEST(EraseComments, NoComments)
+{
+    EXPECT_EQ(str::erase_comments("key: value"), "key: value"sv);
+    EXPECT_EQ(str::erase_comments("I'm Happy "), "I'm Happy "sv);
+    EXPECT_EQ(str::erase_comments("what's cmt"), "what's cmt"sv);
+}

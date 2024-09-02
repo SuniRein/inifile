@@ -28,13 +28,13 @@ target("test.unit.stralgo", function()
     add_deps("stralgo")
 end)
 
-target("test.system.ini_without_comments", function()
+target("test.system.basic_decode_encode", function()
     set_kind("binary")
     set_default(false)
 
     set_group("test.system")
     add_packages("gtest")
 
-    add_files("test/ini_without_comments.cpp")
+    add_files("test/basic_decode_encode.cpp")
     add_deps("inifile")
 end)

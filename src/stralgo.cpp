@@ -40,6 +40,15 @@ KeyValue extract_key_value(std::string_view str)
     return KeyValue{};
 }
 
+std::string_view erase_comments(std::string_view str)
+{
+    if (auto pos = str.find_first_of("#;"); pos != std::string_view::npos)
+    {
+        return substr(str, 0, pos);
+    }
+    return str;
+}
+
 bool is_empty_line(std::string_view str)
 {
     return str.find_first_not_of(BLANK_CHARS) == std::string_view::npos;

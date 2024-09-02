@@ -76,15 +76,17 @@ bool File::decode(std::istream& input)
     {
         ++line;
 
+        auto processed_str = str::erase_comments(buffer);
+
         // Process section.
-        if (auto name = str::extract_section_name(buffer); !name.empty())
+        if (auto name = str::extract_section_name(processed_str); !name.empty())
         {
             current_section = name;
             continue;
         }
 
         // Process key-value.
-        if (auto [key, value] = str::extract_key_value(buffer); !key.empty())
+        if (auto [key, value] = str::extract_key_value(processed_str); !key.empty())
         {
             if (current_section.empty())
             {
@@ -97,7 +99,7 @@ bool File::decode(std::istream& input)
         }
 
         // Process error line.
-        if (!str::is_empty_line(buffer))
+        if (!str::is_empty_line(processed_str))
         {
             error_ = "Syntax error at line " + std::to_string(line);
             return false;

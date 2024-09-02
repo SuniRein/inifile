@@ -22,6 +22,11 @@ struct KeyValue
 [[nodiscard]]
 KeyValue extract_key_value(std::string_view str);
 
+/// Erase all comments in the line,
+/// which begins with '#' or ';'.
+[[nodiscard]]
+std::string_view erase_comments(std::string_view str);
+
 /// Jedge if a line is made of blank char.
 [[nodiscard]]
 bool is_empty_line(std::string_view str);
