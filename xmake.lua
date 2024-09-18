@@ -17,6 +17,14 @@ target("inifile", function()
     add_deps("stralgo")
 end)
 
+-- A simple interactive demo.
+target("interactive", function()
+    set_kind("binary")
+    set_default(false)
+    add_deps("inifile")
+    add_files("example/interactive.cpp")
+end)
+
 target("test.unit.stralgo", function()
     set_kind("binary")
     set_default(false)
