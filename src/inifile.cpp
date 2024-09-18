@@ -31,6 +31,7 @@ bool File::write(std::filesystem::path const& file) const
     }
 
     encode(stream);
+    return true;
 }
 
 bool File::decode(std::string_view str)
