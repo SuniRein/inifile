@@ -95,7 +95,7 @@ bool File::decode(std::istream& input)
                 return false;
             }
 
-            (*this)[current_section][key] = value;
+            (*this)[current_section][std::string(key)] = value;
             continue;
         }
 

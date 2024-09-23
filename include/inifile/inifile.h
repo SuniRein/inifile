@@ -13,52 +13,14 @@ namespace ini
 /**
  * Process ini section.
  */
-class Section: private std::map<std::string, std::string>
-{
-    friend class File;
-
-  public:
-    using Base = std::map<std::string, std::string>;
-
-    // Iterator supports.
-    using Base::begin;   using Base::end;
-    using Base::cbegin;  using Base::cend;
-    using Base::rbegin;  using Base::rend;
-    using Base::crbegin; using Base::crend;
-
-    // Access supports.
-    using Base::operator[];
-    using Base::at;
-    using Base::find;
-
-    // For std::string_view
-    std::string& operator[](std::string_view key) { return (*this)[std::string(key)]; }
-
-    // For const char*
-    std::string& operator[](const char* key) { return (*this)[std::string(key)]; }
-
-  private:
-};
+class Section: public std::map<std::string, std::string> {};
 
 /**
  * Core process class.
  */
-class File: private std::map<std::string, Section>
+class File: public std::map<std::string, Section>
 {
   public:
-    using Base = std::map<std::string, Section>;
-
-    // Iterator supports.
-    using Base::begin;   using Base::end;
-    using Base::cbegin;  using Base::cend;
-    using Base::rbegin;  using Base::rend;
-    using Base::crbegin; using Base::crend;
-
-    // Access supports.
-    using Base::operator[];
-    using Base::at;
-    using Base::find;
-
     /// Read file from path and decode it.
     /// Return false iff error happen.
     /// Run File::error() for mare information.
