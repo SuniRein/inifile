@@ -1,19 +1,90 @@
 #pragma once
 
+#include <charconv>
 #include <filesystem>
 #include <istream>
 #include <map>
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <system_error>
+#include <type_traits>
 
 namespace ini
 {
 
+template <typename T, typename = std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
+T decode(std::string const& str)
+{
+    T number{};
+    auto [ptr, ec] = std::from_chars(str.begin().base(), str.end().base(), number);
+
+    switch (ec)
+    {
+        case std::errc::invalid_argument:    // TODO (SuniRein): Process Error; case std::errc::result_out_of_range: ;
+        case std::errc::result_out_of_range:
+
+        default:
+            return number;
+    }
+}
+
+/**
+ * An interface to ini file.
+ * It can convert to any c++ type easily if a converter is defined.
+ */
+class Field
+{
+  public:
+    Field() = default;
+
+    explicit Field(std::string value): value_(std::move(value)) {}
+    Field& operator=(std::string value)
+    {
+        value_ = std::move(value);
+        return *this;
+    }
+
+    explicit Field(std::string_view value): value_(value) {}
+    Field& operator=(std::string_view value)
+    {
+        value_ = value;
+        return *this;
+    }
+
+    explicit Field(char const* value): value_(value) {}
+    Field& operator=(char const* value)
+    {
+        value_ = value;
+        return *this;
+    }
+
+    /// Get the inner string as `std::string`.
+    /// It is **cost-free**.
+    [[nodiscard]]
+    std::string const& as_str() const { return value_; }
+
+    /// Get the inner string as `char const*`.
+    /// It is **cost-free**.
+    [[nodiscard]]
+    char const* as_cstr() const { return value_.c_str(); }
+
+    /// Convert into type `T`.
+    template <typename T>
+    [[nodiscard]]
+    T to()
+    {
+        return decode<T>(value_);
+    }
+
+  private:
+    std::string value_;
+};
+
 /**
  * Process ini section.
  */
-class Section: public std::map<std::string, std::string> {};
+class Section: public std::map<std::string, Field> {};
 
 /**
  * Core process class.

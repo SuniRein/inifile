@@ -51,7 +51,7 @@ void find(std::istream& input)
         return;
     }
 
-    std::cout << "[" << section_name << "] " << key_name << ": " << key->second << "\n";
+    std::cout << "[" << section_name << "] " << key_name << ": " << key->second.as_str() << "\n";
 }
 
 void update(std::istream& input)

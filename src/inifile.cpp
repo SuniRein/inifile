@@ -59,7 +59,7 @@ void File::encode(std::ostream& output) const
         // Section body.
         for (auto const& [key, value] : section)
         {
-            output << key << " = " << value << "\n";
+            output << key << " = " << value.as_str() << "\n";
         }
 
         // Empty line after each section.

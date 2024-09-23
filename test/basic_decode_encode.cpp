@@ -53,12 +53,13 @@ TEST(IniFile, WithoutComments)
 
     ASSERT_TRUE(parser.decode(INI_FILE_WITHOUT_COMMENTS));
 
-    EXPECT_EQ(parser["Section 1"]["name"],     "git"sv);
-    EXPECT_EQ(parser["Section 1"]["blog"],     "http://git.github.com"sv);
+    EXPECT_EQ(parser["Section 1"]["name"].as_str(), "git"sv);
+    EXPECT_EQ(parser["Section 1"]["blog"].as_str(), "http://git.github.com"sv);
 
-    EXPECT_EQ(parser["Section 2"]["user"],     "suni"sv);
-    EXPECT_EQ(parser["Section 2"]["money"],    "100"sv);
-    EXPECT_EQ(parser["Section 2"]["industry"], "s=j"sv);
+    EXPECT_EQ(parser["Section 2"]["user"].as_str(),     "suni"sv);
+    EXPECT_EQ(parser["Section 2"]["money"].to<int>(),   100);
+    EXPECT_EQ(parser["Section 2"]["money"].to<float>(), 100.0F);
+    EXPECT_EQ(parser["Section 2"]["industry"].as_str(), "s=j"sv);
 
     parser["Section 3"]["new"] = "try";
     parser["Section 3"]["Happy"] = "yes";
@@ -72,12 +73,13 @@ TEST(IniFile, WithComments)
 
     ASSERT_TRUE(parser.decode(INI_FILE_WITH_COMMENTS));
 
-    EXPECT_EQ(parser["Section 1"]["name"],     "git"sv);
-    EXPECT_EQ(parser["Section 1"]["blog"],     "http://git.github.com"sv);
+    EXPECT_EQ(parser["Section 1"]["name"].as_str(),     "git"sv);
+    EXPECT_EQ(parser["Section 1"]["blog"].as_str(),     "http://git.github.com"sv);
 
-    EXPECT_EQ(parser["Section 2"]["user"],     "suni"sv);
-    EXPECT_EQ(parser["Section 2"]["money"],    "100"sv);
-    EXPECT_EQ(parser["Section 2"]["industry"], "s=j"sv);
+    EXPECT_EQ(parser["Section 2"]["user"].as_str(),     "suni"sv);
+    EXPECT_EQ(parser["Section 2"]["money"].to<int>(),   100);
+    EXPECT_EQ(parser["Section 2"]["money"].to<float>(), 100.0F);
+    EXPECT_EQ(parser["Section 2"]["industry"].as_str(), "s=j"sv);
 
     parser["Section 3"]["new"] = "try";
     parser["Section 3"]["Happy"] = "yes";
