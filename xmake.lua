@@ -15,7 +15,7 @@ target("inifile", function()
     set_kind("static")
     add_files("src/inifile.cpp")
     add_includedirs("include", {public = true})
-    add_packages("fmt")
+    add_packages("fmt", {public = true})
     add_deps("stralgo")
 end)
 

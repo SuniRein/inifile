@@ -5,29 +5,67 @@
 #include <istream>
 #include <map>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <system_error>
 #include <type_traits>
 
+#include "fmt/format.h"
+
 namespace ini
 {
 
-template <typename T, typename = std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
-T decode(std::string const& str)
+struct DecodeError: std::runtime_error
 {
-    T number{};
-    auto [ptr, ec] = std::from_chars(str.begin().base(), str.end().base(), number);
+    using std::runtime_error::runtime_error;
+};
 
-    switch (ec)
+template<typename T, typename Enable = void>
+struct Decoder
+{
+    Decoder() = delete;
+};
+
+template<typename T>
+struct Decoder<T, std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
+{
+    static T decode(std::string const& str)
     {
-        case std::errc::invalid_argument:    // TODO (SuniRein): Process Error; case std::errc::result_out_of_range: ;
-        case std::errc::result_out_of_range:
+        T number{};
+        auto [ptr, ec] = std::from_chars(str.begin().base(), str.end().base(), number);
 
-        default:
-            return number;
+        switch (ec)
+        {
+            case std::errc::invalid_argument:
+                throw DecodeError(fmt::format("Failed to decode a number type from {}. Error: Invalid argument.", str));
+
+            case std::errc::result_out_of_range:
+                throw DecodeError(fmt::format("Failed to decode a number type from {}. Error: result out of range", str));
+
+            default:
+                return number;
+        }
     }
-}
+};
+
+template<>
+struct Decoder<bool>
+{
+    static bool decode(std::string const& str)
+    {
+        bool result{};
+        if (str == "true" || str == "True")
+        {
+            return true;
+        }
+        if (str == "false" || str == "False")
+        {
+            return false;
+        }
+        throw DecodeError(fmt::format("Failed to decode bool form {}.", str));
+    }
+};
 
 /**
  * An interface to ini file.
@@ -74,7 +112,7 @@ class Field
     [[nodiscard]]
     T to()
     {
-        return decode<T>(value_);
+        return Decoder<T>::decode(value_);
     }
 
   private:
