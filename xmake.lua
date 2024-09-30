@@ -27,7 +27,7 @@ target("interactive", function()
     add_files("example/interactive.cpp")
 end)
 
-target("test.unit.stralgo", function()
+target("test.stralgo", function()
     set_kind("binary")
     set_default(false)
 
@@ -38,7 +38,7 @@ target("test.unit.stralgo", function()
     add_deps("stralgo")
 end)
 
-target("test.system.basic_decode_encode", function()
+target("test.basic_decode_encode", function()
     set_kind("binary")
     set_default(false)
 
@@ -46,5 +46,16 @@ target("test.system.basic_decode_encode", function()
     add_packages("gtest")
 
     add_files("test/basic_decode_encode.cpp")
+    add_deps("inifile")
+end)
+
+target("test.decode", function()
+    set_kind("binary")
+    set_default(false)
+
+    set_group("test.system")
+    add_packages("gtest")
+
+    add_files("test/decode.cpp")
     add_deps("inifile")
 end)
