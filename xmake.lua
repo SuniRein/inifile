@@ -4,6 +4,7 @@ set_version("0.0.1")
 add_rules("mode.debug", "mode.release")
 
 add_requires("gtest", {configs = {main = true}})
+add_requires("fmt")
 
 target("stralgo", function()
     set_kind("object")
@@ -14,6 +15,7 @@ target("inifile", function()
     set_kind("static")
     add_files("src/inifile.cpp")
     add_includedirs("include", {public = true})
+    add_packages("fmt")
     add_deps("stralgo")
 end)
 
